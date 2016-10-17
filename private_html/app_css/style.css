@@ -1,0 +1,192 @@
+@font-face {
+font-family: Neuropol X Rg;
+src: url('../app_fuentes/neuropol_x_rg.ttf') ;
+}
+
+body {
+  margin-top: 10px;
+  font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+ul li {
+  margin-bottom: 5px;
+}
+
+/* *************************************
+* *************** Loader ***************
+* ************************************ */
+#fondo-loader {
+    display: none;
+    width:100%;
+    height:100%;
+    overflow: auto;
+    position: fixed;
+    background-color: black;
+    opacity:0.4;
+    filter:alpha(opacity=40); /* For IE8 and earlier */
+    top:0;
+    left:0;
+    z-index: 599;
+}
+.modal-dialog {
+    display: none;
+    padding-top: 10px;
+    top: 100px;
+    left: 50%;
+    margin-left: -100px;
+    position: fixed;
+    z-index: 600;
+
+}
+.modal-chica {
+    width: 200px;
+}
+.modal-content {
+    position: relative;
+    background-color: #FFF;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    outline: 0px none;
+    box-shadow: 0px 3px 9px rgba(0, 0, 0, 0.5);
+}  
+
+.modal-header {
+    min-height: 16.4286px;
+    padding: 15px;
+    border-bottom: 1px solid #E5E5E5;
+}
+
+.modal-title {
+    margin: 0px;
+    line-height: 1.42857;
+}
+
+.modal-body {
+    position: relative;
+}
+.modal-body p{
+    text-align: center;
+}
+
+/* *************************************
+* *************** Header ***************
+* ************************************ */
+#main-header {
+  margin: 0;
+  top: 0;
+  width: 100%;  
+  z-index: 99;  
+    /* For IE 8*/
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#11000000, endColorstr=#11000000)";
+
+ /* -moz-box-shadow: 0 1px 5px #999;
+  -webkit-box-shadow: 0 1px 5px #999;
+  box-shadow: 0 1px 5px #999;*/
+}
+
+#div-header {
+  padding-top: 10px;
+  background: transparent url("../app_images/header.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #000; 
+  margin-bottom: 5px;
+  height: 110px;
+
+
+  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='[../app_images/header.jpg]', sizingMethod='scale');
+-ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='[../app_images/header.jpg]', sizingMethod='scale')";
+}
+
+#div-header-xs{
+    margin-bottom: 10px;
+}
+
+//----------------MENU------------------
+.navbar-propia{
+    float: right;
+}
+
+/* *************************************
+* *************** Contacto *************
+* ************************************ */
+
+#dvAtencion p {
+    padding-top: 15px;
+    font-size: 20px;
+    color: #666666;
+    text-align: center;
+}
+#frmContacto{    
+    margin-bottom: 20px;
+}
+#frmContacto label{    
+    font-size: 12px;
+    color: #6B6B6B;
+}
+
+
+/* *************************************
+* *************** Footer-xs ***************
+* ************************************ */
+#div-footer-xs{
+  margin-top: 15px;  
+  padding-top: 20px;
+  background-color: #000;
+}
+#div-footer-xs p{
+ text-align:  center;
+ font-size:small;
+ color:#666666;
+}
+.direccion {
+  overflow: hidden;
+  margin-top: -90px;
+}
+
+.direccion p {
+  margin-bottom: 5px;
+  font-size: 11px;
+  font-size: 1.1rem;
+  text-align: center;
+  color: #ffffff;
+}
+
+.direccion .copyright {
+  margin-top: 10px;
+  color: #777;
+  font-size: 9px;
+  font-size: 0.9rem;  
+}
+
+/* *************************************
+* *************** Footer ***************
+* ************************************ */
+#div-footer p{
+ text-align:  center;
+ font-size:small;
+ color:#666666;
+ padding-top: 10px;
+}
+
+/* *************************************
+* *********** Media queries ************
+* ************************************ */
+
+/* Small devices (tablets, 768px and up) */
+
+@media (min-width: 768px) { 
+
+    #dvAtencion p {
+        padding-top: 75px;
+        font-size: 25px;
+        color: #666666;
+    }    
+}

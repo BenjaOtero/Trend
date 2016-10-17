@@ -1,0 +1,264 @@
+﻿<?php
+ class Utilitarios {
+     
+    public static function cleanString($string){
+      $string=trim($string);
+      $string=mysql_escape_string($string);
+          $string=htmlspecialchars($string);
+      return $string;
+    }
+
+    function TratarImagen($path,$pathTemp,$imagen,$ImagenTemp,$anchoBase,$anchoZ){
+      $archivo=$path.$imagen;
+      if(file_exists($archivo))
+      {
+          $mensaje="<script type='text/javascript'> alert('El archivo de imagen ya existe. (Cambie el nombre del archivo) No se creó el registro.')</script>";
+          echo $mensaje;
+          return false;
+      }
+          copy($ImagenTemp,$pathTemp.$imagen);
+      list($width, $height, $type, $attr) = getimagesize($pathTemp.$imagen);
+      $anchos[0]=$anchoBase;
+      $anchos[1]=$anchoZ;
+      $x=1;
+      foreach ($anchos as $ancho):
+          if($x==1):
+              $porcentaje = $anchoBase/$width;
+              $img_original=$pathTemp.$imagen;
+              $img_nueva=$path.$imagen;
+              $img_nueva_anchura=$anchoBase;
+              $img_nueva_altura=$porcentaje*$height;
+          else:
+              $porcentaje = $anchoZ/$width;
+              $img_original=$pathTemp.$imagen;
+              $img_nueva=$path."z_".$imagen;
+              $img_nueva_anchura=$anchoZ;
+              $img_nueva_altura=$porcentaje*$height;
+          endif;
+          $img_nueva_calidad="85";
+          $extension = explode(".", $imagen);
+          if($extension[1]=='jpg')
+            {
+              $img=imagecreatefromjpeg($img_original);
+            }
+          elseif($extension[1]=='JPG')
+            {
+              $img=imagecreatefromjpeg($img_original);
+            }
+          elseif($extension[1]=='JPEG')
+            {
+              $img=imagecreatefromjpeg($img_original);
+            }
+          elseif($extension[1]=='jpeg')
+            {
+              $img=imagecreatefromjpeg($img_original);
+            }
+          elseif($extension[1]=='png')
+            {
+              $img=imagecreatefrompng($img_original);
+            }
+          elseif($extension[1]=='PNG')
+            {
+              $img=imagecreatefrompng($img_original);
+            }
+          elseif($extension[1]=='gif')
+            {
+              $img=imagecreatefromgif($img_original);
+            }
+          elseif($extension[1]=='GIF')
+            {
+              $img=imagecreatefromgif($img_original);
+            }
+          $thumb = imagecreatetruecolor($img_nueva_anchura,$img_nueva_altura);
+          $sizes=getimagesize($img_original);
+          $alto=$sizes[0];
+          $ancho=$sizes[1];
+          imagecopyresized($thumb,$img,0,0,0,0,$img_nueva_anchura,$img_nueva_altura,imagesx($img),imagesy($img ));
+          imagejpeg($thumb,$img_nueva,$img_nueva_calidad);
+          imagedestroy ($img);
+          $x++;
+      endforeach;
+      unlink($img_original);
+      return true;
+    }
+
+    public static function getRealIP() {
+        if (!empty($_SERVER['HTTP_CLIENT_IP']))
+            return $_SERVER['HTTP_CLIENT_IP'];
+
+        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+            return $_SERVER['HTTP_X_FORWARDED_FOR'];
+
+        return $_SERVER['REMOTE_ADDR'];
+    }
+
+    public static function insertFormatoFecha($fecha) {
+        list($dia,$mes,$anio)=explode("/",$fecha);
+        return $anio."-".$mes."-".$dia;
+    }
+
+    public static function insertFechaDesde($fecha) {
+        list($dia,$mes,$anio)=explode("/",$fecha);
+        return $anio."-".$mes."-".$dia;
+    }
+
+    public static function insertFechaHasta($fecha) {
+        list($dia,$mes,$anio)=explode("/",$fecha);
+        $hora=" 23:59:59";
+        return $anio."-".$mes."-".$dia." ".$hora;
+    }
+
+    public function devolverFormatoFecha($fecha) {
+        list($anio,$mes,$dia)=explode("-",$fecha);
+        return $dia."/".$mes."/".$anio;
+    }
+
+    public static function devolverFechaHora($valor) {
+        $fecha=substr ($valor, 0, 10);
+        $hora=substr ($valor, -8);
+        list($anio,$mes,$dia)=explode("-",$fecha);
+        return $dia."/".$mes."/".$anio." ".$hora;
+    }
+    
+    public static function contador()
+    {
+        include_once ("../models/contador_mdl.php");
+        $modelo_contador = new ContadorMDL();
+        $ip = $_SERVER["REMOTE_ADDR"];                       
+        $registro = $modelo_contador->Listar($ip);    
+        if($registro != NULL)
+        {
+            $diferencia = $registro[0]['diferencia'];
+            $tiempoTrascurrido = explode(":", $diferencia);
+            $horasTranscurridas = (int)$tiempoTrascurrido[0];
+            if($horasTranscurridas>0)
+            {   
+                // obtengo los datos de geolocalizacion de http://www.geoplugin.net/php.gp
+                curl_setopt($ch=curl_init(), CURLOPT_URL, "http://www.geoplugin.net/php.gp?ip=".$ip);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                $response = curl_exec($ch);
+                curl_close($ch);           
+                $meta = unserialize($response);
+                $pais = $meta['geoplugin_countryName'];
+                $ciudad = $meta['geoplugin_city'];                 
+                $modelo_contador->Insertar($ip, $pais, $ciudad); 
+            }
+        }
+        else
+        {  
+            // obtengo los datos de geolocalizacion de http://www.geoplugin.net/php.gp?ip=190.122.77.3
+            curl_setopt($ch=curl_init(), CURLOPT_URL, "http://www.geoplugin.net/php.gp?ip=".$ip);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            $response = curl_exec($ch);
+            curl_close($ch);           
+            $meta = unserialize($response);
+            $pais = $meta['geoplugin_countryName'];
+            $ciudad = $meta['geoplugin_city'];             
+            $modelo_contador->Insertar($ip, $pais, $ciudad); 
+        }
+        //-01:37:42 a las y 22
+    }
+   
+    
+// file_get_contents and curl php
+
+
+  /*  function curl_load($url){
+        curl_setopt($ch=curl_init(), CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $response = curl_exec($ch);
+        curl_close($ch);
+        return $response;
+    }
+
+    $url = "http://www.geoplugin.net/php.gp?ip=186.108.251.119";
+    echo curl_load($url);*/
+
+    
+    public function PrepararHtml()
+    {
+        $nombre=$_REQUEST['txtNombre'];
+        $apellido=$_REQUEST['txtApellido'];
+        $mail=$_REQUEST['txtMail'];
+        $area=$_REQUEST['txtArea'];       
+        $html = "<p>Nombre: ".$nombre."</p>";
+        $html .= "<p>Apellido: ".$apellido."</p>";
+        $html .= "<p>Correo: ".$mail."</p>";
+        if(isset($_REQUEST['txtTE'])):
+            $te=$_REQUEST['txtTE'];
+            $html .= "<p>Te: ".$te."</p>";
+        endif; 
+        $html .= "<p>Consulta: ".$area."</p>";
+
+        $this->EnviarMail($mail, $html);             
+        return $array;
+    }     
+    
+    function EnviarMail($remitente, $html)
+    {
+        $mail = new PHPMailer();
+        $mail->IsSMTP();       
+        $mail->SMTPOptions = array(
+        'ssl' => array(
+        'verify_peer' => false,
+        'verify_peer_name' => false,
+        'allow_self_signed' => true
+        )
+        );          
+        $mail->CharSet = "UTF-8";
+        $mail->SMTPAuth = true;
+        $mail->Host = "mail.trendsistemas.com"; // SMTP a utilizar. Por ej. smtp.elserver.com
+        $mail->Username = "info@trendsistemas.com"; // Correo completo a utilizar
+        $mail->Password = "8953#AFjn"; // Contraseña
+        $mail->Port = 587; // Puerto a utilizar
+        $mail->From = "info@trendsistemas.com"; // Desde donde enviamos (Para mostrar)
+        $mail->FromName = $remitente;
+        $mail->AddAddress("info@trendsistemas.com"); // Esta es la dirección a donde enviamos
+       // $mail->AddCC("cuenta@dominio.com"); // Copia
+      //  $mail->AddBCC("cuenta@dominio.com"); // Copia oculta
+        $mail->IsHTML(true); // El correo se envía como HTML
+        $mail->Subject = "Consulta a Trend Sistemas"; // Este es el titulo del email.
+        $mail->Body = $html; // Mensaje a enviar
+     //   $mail->AddAttachment("imagenes/imagen.jpg", "imagen.jpg");
+        $exito = $mail->Send(); // Envía el correo.
+        if($exito){
+            $mensaje = "Exito";
+        }else{
+            $mensaje = "Fracasado";
+        }  
+        echo $mensaje;
+    }    
+    
+    public static function LoginFacebook() {        
+        $fb = new Facebook\Facebook([
+          'app_id' => '1068588159868715',
+          'app_secret' => 'd3790d1f47df4805b47976f16199fd89',
+          'default_gra]ph_version' => 'v2.6',
+          ]);
+        $helper = $fb->getRedirectLoginHelper();
+        $permissions = ['email']; // optional
+
+        if (isset($_SESSION['facebook_access_token'])) {
+                $accessToken = $_SESSION['facebook_access_token'];
+        } else {
+                $accessToken = $helper->getAccessToken();
+        }
+        if (isset($_SESSION['facebook_access_token'])) {
+                $fb->setDefaultAccessToken($_SESSION['facebook_access_token']);            
+        } else {
+                // getting short-lived access token
+                $_SESSION['facebook_access_token'] = (string) $accessToken;
+                // OAuth 2.0 client handler
+                $oAuth2Client = $fb->getOAuth2Client();
+                // Exchanges a short-lived access token for a long-lived one
+                $longLivedAccessToken = $oAuth2Client->getLongLivedAccessToken($_SESSION['facebook_access_token']);
+                $_SESSION['facebook_access_token'] = (string) $longLivedAccessToken;
+                // setting default access token to be used in script
+                $fb->setDefaultAccessToken($_SESSION['facebook_access_token']);
+        }        
+        $profile_request = $fb->get('/me?fields=name,first_name,last_name,email');
+        $profile = $profile_request->getGraphNode()->asArray();
+        return $profile;
+    }  
+}
+?>
